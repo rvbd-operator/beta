@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/name: namespace
     app.kubernetes.io/part-of: alluvio-operator
     control-plane: controller-manager
-  name: alluvio-operator-system
+  name: alluvio-operator
 ---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
@@ -27,7 +27,7 @@ spec:
     singular: alluviooperator
   scope: Namespaced
   versions:
-  - name: v1alpha1
+  - name: betav1
     schema:
       openAPIV3Schema:
         description: AlluvioOperator is the Schema for the alluviooperators API
@@ -45,20 +45,31 @@ spec:
             properties:
               analysisServerHost:
                 type: string
+              analysisServerPort:
+                type: string
               conditions:
                 items:
                   type: string
                 type: array
+              containerMetrics:
+                description: private agent configurable values
+                type: string
               customerId:
-                description: expose agent configurable values
+                description: exposed agent configurable values
                 type: string
               forceRedploy:
                 description: ForceRedploy is any string, modifying this field instructs the Operator to redeploy the Operand
+                type: string
+              logicalServer:
+                type: string
+              maxInstrLogs:
                 type: string
               port:
                 description: Port is the port number to expose on the Nginx Pod
                 format: int32
                 type: integer
+              saasAnalysisServerEnabled:
+                type: string
             type: object
           status:
             description: AlluvioOperatorStatus defines the observed state of AlluvioOperator
@@ -86,7 +97,7 @@ metadata:
     app.kubernetes.io/name: serviceaccount
     app.kubernetes.io/part-of: alluvio-operator
   name: alluvio-operator-controller-manager
-  namespace: alluvio-operator-system
+  namespace: alluvio-operator
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -99,7 +110,7 @@ metadata:
     app.kubernetes.io/name: role
     app.kubernetes.io/part-of: alluvio-operator
   name: alluvio-operator-leader-election-role
-  namespace: alluvio-operator-system
+  namespace: alluvio-operator
 rules:
 - apiGroups:
   - ""
@@ -255,7 +266,7 @@ metadata:
     app.kubernetes.io/name: rolebinding
     app.kubernetes.io/part-of: alluvio-operator
   name: alluvio-operator-leader-election-rolebinding
-  namespace: alluvio-operator-system
+  namespace: alluvio-operator
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -263,7 +274,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: alluvio-operator-controller-manager
-  namespace: alluvio-operator-system
+  namespace: alluvio-operator
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -283,7 +294,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: alluvio-operator-controller-manager
-  namespace: alluvio-operator-system
+  namespace: alluvio-operator
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -303,7 +314,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: alluvio-operator-controller-manager
-  namespace: alluvio-operator-system
+  namespace: alluvio-operator
 ---
 apiVersion: v1
 kind: Service
@@ -317,13 +328,33 @@ metadata:
     app.kubernetes.io/part-of: alluvio-operator
     control-plane: controller-manager
   name: alluvio-operator-controller-manager-metrics-service
-  namespace: alluvio-operator-system
+  namespace: alluvio-operator
 spec:
   ports:
   - name: https
     port: 8443
     protocol: TCP
     targetPort: https
+  selector:
+    control-plane: controller-manager
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: webhook
+    app.kubernetes.io/created-by: alluvio-operator
+    app.kubernetes.io/instance: webhook-service
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: service
+    app.kubernetes.io/part-of: alluvio-operator
+  name: alluvio-operator-webhook-service
+  namespace: alluvio-operator
+spec:
+  ports:
+  - port: 443
+    protocol: TCP
+    targetPort: 9443
   selector:
     control-plane: controller-manager
 ---
@@ -339,7 +370,7 @@ metadata:
     app.kubernetes.io/part-of: alluvio-operator
     control-plane: controller-manager
   name: alluvio-operator-controller-manager
-  namespace: alluvio-operator-system
+  namespace: alluvio-operator
 spec:
   replicas: 1
   selector:
@@ -398,7 +429,7 @@ spec:
         - --leader-elect
         command:
         - /manager
-        image: rvbdapm/alluvio-operator:0.0.1
+        image: rvbdapm/alluvio-operator:beta.v1
         livenessProbe:
           httpGet:
             path: /healthz
@@ -406,6 +437,10 @@ spec:
           initialDelaySeconds: 15
           periodSeconds: 20
         name: manager
+        ports:
+        - containerPort: 9443
+          name: webhook-server
+          protocol: TCP
         readinessProbe:
           httpGet:
             path: /readyz
@@ -424,22 +459,87 @@ spec:
           capabilities:
             drop:
             - ALL
+        volumeMounts:
+        - mountPath: /tmp/k8s-webhook-server/serving-certs
+          name: cert
+          readOnly: true
       securityContext:
         runAsNonRoot: true
       serviceAccountName: alluvio-operator-controller-manager
       terminationGracePeriodSeconds: 10
+      volumes:
+      - name: cert
+        secret:
+          defaultMode: 420
+          secretName: webhook-server-cert
 ---
-apiVersion: operator.rvbdapm/v1alpha1
-kind: AlluvioOperator
+apiVersion: cert-manager.io/v1
+kind: Certificate
 metadata:
   labels:
-    app.kubernetes.io/name: alluviooperator
-    app.kubernetes.io/instance: alluvio-agent
-    app.kubernetes.io/part-of: alluvio-operator
-    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/component: certificate
     app.kubernetes.io/created-by: alluvio-operator
-  name: alluvio-agent
+    app.kubernetes.io/instance: serving-cert
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: certificate
+    app.kubernetes.io/part-of: alluvio-operator
+  name: alluvio-operator-serving-cert
+  namespace: alluvio-operator
 spec:
-  port: 2111
-  customerId: "CustomerId"
-  analysisServerHost: "HostId"
+  dnsNames:
+  - alluvio-operator-webhook-service.alluvio-operator.svc
+  - alluvio-operator-webhook-service.alluvio-operator.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: alluvio-operator-selfsigned-issuer
+  secretName: webhook-server-cert
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  labels:
+    app.kubernetes.io/component: certificate
+    app.kubernetes.io/created-by: alluvio-operator
+    app.kubernetes.io/instance: selfsigned-issuer
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: issuer
+    app.kubernetes.io/part-of: alluvio-operator
+  name: alluvio-operator-selfsigned-issuer
+  namespace: alluvio-operator
+spec:
+  selfSigned: {}
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: alluvio-operator/alluvio-operator-serving-cert
+  labels:
+    app.kubernetes.io/component: webhook
+    app.kubernetes.io/created-by: alluvio-operator
+    app.kubernetes.io/instance: mutating-webhook-configuration
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: mutatingwebhookconfiguration
+    app.kubernetes.io/part-of: alluvio-operator
+  name: alluvio-operator-mutating-webhook-configuration
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: alluvio-operator-webhook-service
+      namespace: alluvio-operator
+      path: /mutate--v1-pod
+  failurePolicy: Ignore
+  name: mpod.kb.io
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - pods
+  sideEffects: None

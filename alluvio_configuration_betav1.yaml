@@ -1,0 +1,15 @@
+apiVersion: operator.rvbdapm/betav1
+kind: AlluvioOperator
+metadata:
+  labels:
+    app.kubernetes.io/name: alluviooperator
+    app.kubernetes.io/instance: alluvio-apm-agent
+    app.kubernetes.io/part-of: alluvio-operator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: alluvio-operator
+  name: alluvio-apm-agent
+  namespace: alluvio-apm-agent
+spec:
+  customerId: ""
+  analysisServerHost: "HostId"
+
