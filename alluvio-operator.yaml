@@ -43,11 +43,17 @@ spec:
           spec:
             description: AlluvioOperatorSpec defines the desired state of AlluvioOperator
             properties:
+              agentCpu:
+                type: string
+              agentMemory:
+                description: AS resources
+                type: string
               analysisServerHost:
                 type: string
               analysisServerPort:
                 type: string
               conditions:
+                description: This might be garbage.
                 items:
                   type: string
                 type: array
@@ -57,17 +63,10 @@ spec:
               customerId:
                 description: exposed agent configurable values
                 type: string
-              forceRedploy:
-                description: ForceRedploy is any string, modifying this field instructs the Operator to redeploy the Operand
-                type: string
               logicalServer:
                 type: string
               maxInstrLogs:
                 type: string
-              port:
-                description: Port is the port number to expose on the Nginx Pod
-                format: int32
-                type: integer
               saasAnalysisServerEnabled:
                 type: string
             type: object
