@@ -428,7 +428,7 @@ spec:
         - --leader-elect
         command:
         - /manager
-        image: rvbdapm/alluvio-operator:alpha.v1
+        image: rvbdapm/alluvio-operator:alpha.v0.1
         livenessProbe:
           httpGet:
             path: /healthz
