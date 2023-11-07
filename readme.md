@@ -65,7 +65,7 @@ alluvio-operator-controller-manager-d44c57448-8jdth   2/2     Running   0       
 alluvio-reporter-8699f9bbb7-nxp4n                     1/1     Running   0          6m36s
 ```
 
-# Enabling auto-instrumentation for Java and .NET applications
+# Enable auto-instrumentation for Java and .NET applications
 Auto-instrumentation will take effect the next time the application is deployed.
 
 **Update application-deployment-name and run**
