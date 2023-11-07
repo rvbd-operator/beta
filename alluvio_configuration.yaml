@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/created-by: alluvio-operator
   name: alluvio-apm-agent
-  namespace: alluvio-apm-agent
+  namespace: alluvio-operator
 spec:
   customerId: ""
   analysisServerHost: "HostId"
