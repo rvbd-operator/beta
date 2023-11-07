@@ -3,7 +3,7 @@
 # Getting started
 Welcome to the Alluvio Operator installation guide. This guide will quickly show you how to install the Alluvio Operator and instrument Java and .Net applications running in Kubernetes.
 
-# 1. Attach to your cluster
+# Attach to your cluster
 Ensure that kubectl points to your Kubernetes cluster where the Alluvio Operator and Alluvio APM Agent will run.
 
 **Attach to your Azure cluster**
@@ -16,7 +16,7 @@ az aks get-credentials --resource-group <your-resource-group> --name <your-aks-c
 aws eks --region <region-name> update-kubeconfig --name <cluster-name>
 ```
 
-# 2. Install a Certificate Manager
+# Install a Certificate Manager
 The Alluvio Operator requires that a certificate manager is installed in your cluster and that your cluster uses Kubernetes version 1.22 or greater.
 
 **Check if a certificate manager is installed on your cluster**
@@ -28,12 +28,12 @@ kubectl get pods --namespace cert-manager -l app=cert-manager
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.12.0/cert-manager.yaml
 ```
 
-# 3. Install the Alluvio Operator
+# Install the Alluvio Operator
 ```
 kubectl apply -f https://raw.githubusercontent.com/rvbd-operator/beta/main/alluvio-operator.yaml
 ```
 
-# 4. Configure the Alluvio APM Agent
+# Configure the Alluvio APM Agent
 The Customer ID and Analysis Server Host will need to be configured for the APM Agent.
 
 ```
@@ -65,7 +65,7 @@ alluvio-operator-controller-manager-d44c57448-8jdth   2/2     Running   0       
 alluvio-reporter-8699f9bbb7-nxp4n                     1/1     Running   0          6m36s
 ```
 
-# 5. Enabling auto-instrumentation for Java and .Net applications
+# Enabling auto-instrumentation for Java and .NET applications
 Auto-instrumentation will take effect the next time the application is deployed.
 
 **Update application-deployment-name and run**
