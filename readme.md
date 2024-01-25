@@ -27,6 +27,14 @@ kubectl get pods --namespace cert-manager -l app=cert-manager
 ```
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.12.0/cert-manager.yaml
 ```
+**Before installing, verify all certificate manager processes are running in your cluster**
+```
+kubectl get pods --namespace cert-manager -l app=cert-manager
+NAME                                       READY   STATUS    RESTARTS   AGE
+cert-manager-5bd57786d4-wjbvn              1/1     Running   0          6s
+cert-manager-cainjector-57657d5754-vj6cb   1/1     Running   0          6s
+cert-manager-webhook-7d9f8748d4-f8g58      1/1     Running   0          6s
+```
 
 # Install the Alluvio Operator
 ```
