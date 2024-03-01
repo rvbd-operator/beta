@@ -1,16 +1,15 @@
 apiVersion: operator.riverbed/betav1
-kind: AlluvioOperator
+kind: RiverbedOperator
 metadata:
   labels:
-    app.kubernetes.io/name: alluviooperator
-    app.kubernetes.io/instance: alluvio-apm-agent
-    app.kubernetes.io/part-of: alluvio-operator
+    app.kubernetes.io/name: riverbedoperator
+    app.kubernetes.io/instance: riverbed-apm-agent
+    app.kubernetes.io/part-of: riverbed-operator
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/created-by: alluvio-operator
-  name: alluvio-apm-agent
+    app.kubernetes.io/created-by: riverbed-operator
+  name: riverbed-apm-agent
+  namespace: riverbed-operator
 spec:
-
-  # comments...   test one.
   customerId: "61d710a0-811f-46d1-b654-0aeabb8e8b0a"
   analysisServerHost: "agents.apm.next.aternity.com"
   apmAgent:
@@ -19,7 +18,7 @@ spec:
     containerMetrics: false
     hostMetrics: true
     javaMetrics: true
-    # add comment - we do this so.... xxxxx - only in exceptional cases.  explain.
+    # Use this security context in order to see instrumentation status from the web ui.
     securityContext:
       runAsUser: 0
       runAsGroup: 0

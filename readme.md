@@ -27,35 +27,41 @@ kubectl get pods --namespace cert-manager -l app=cert-manager
 ```
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.12.0/cert-manager.yaml
 ```
-**Before installing, verify all certificate manager processes are running in your cluster**
-```
-kubectl get pods --namespace cert-manager -l app=cert-manager
-NAME                                       READY   STATUS    RESTARTS   AGE
-cert-manager-5bd57786d4-wjbvn              1/1     Running   0          6s
-cert-manager-cainjector-57657d5754-vj6cb   1/1     Running   0          6s
-cert-manager-webhook-7d9f8748d4-f8g58      1/1     Running   0          6s
-```
 
 # Install the Alluvio Operator
+
+**from github**
+
 ```
-kubectl apply -f https://raw.githubusercontent.com/rvbd-operator/beta/main/alluvio-operator.yaml
+kubectl apply -f https://raw.githubusercontent.com/rvbd-operator/beta/1.0.0/alluvio-operator.yaml
 ```
 
-# Configure the Alluvio APM Agent
+**from zeus**
+```
+kubectl apply -f /zeus-shared/user/rmurray/k8sop/alluvio-operator.yaml
+```
+
+# Configure the Alluvio Operator
 The Customer ID and Analysis Server Host will need to be configured for the APM Agent.
 
+**from github**
 ```
-kubectl create -f https://raw.githubusercontent.com/rvbd-operator/beta/main/alluvio_configuration.yaml --namespace=alluvio-operator --edit
+kubectl create -f https://raw.githubusercontent.com/rvbd-operator/beta/1.0.0/alluvio_configuration.yaml --namespace=alluvio-operator --edit
 ```
-
+**from zeus**
+```
+kubectl create -f /zeus-shared/user/rmurray/k8sop/alluvio_configuration.yaml --namespace=alluvio-operator --edit
+```
 Under the ‘spec’ section of the file:
 - update the customerId to your Customer ID
 - update the analysisServerHost to your Analysis Server Host identifier
+- update the configName to specify the default process configuration name used by your instrumented applications
 
 ```
 spec:
   customerId: "MyCustId"
   analysisServerHost: "MyHostId"
+  configName: "default config"
 ```
 
 **Verify that the Alluvio APM Agent is running**
@@ -70,14 +76,42 @@ NAME                                                  READY   STATUS    RESTARTS
 alluvio-apm-agent-2hpcs                               1/1     Running   0          6m36s
 alluvio-apm-agent-54v54                               1/1     Running   0          6m36s
 alluvio-operator-controller-manager-d44c57448-8jdth   2/2     Running   0          19m
-alluvio-reporter-8699f9bbb7-nxp4n                     1/1     Running   0          6m36s
 ```
 
 # Enable auto-instrumentation for Java and .NET apps
 Auto-instrumentation will take effect the next time the application is deployed.
 
-**Update application-deployment-name and run**
+**Update Alpine (linux-musl64) application-deployment-name**
 ```
-kubectl patch deployment <application-deployment-name> -p '{"spec": {"template":{"metadata":{"annotations":{"instrument.apm.alluvio/inject":"true"}}}} }'
+kubectl patch deployment <application-deployment-name> -p '{"spec": {"template":{"metadata":{"annotations":{"instrument.apm.alluvio/inject-runtime":"linux-musl-x64"}}}} }'
 ```
- 
+
+**Update java application-deployment-name**
+```
+kubectl patch deployment <application-deployment-name> -p '{"spec": {"template":{"metadata":{"annotations":{"instrument.apm.alluvio/inject-java":"true"}}}} }'
+```
+
+**Update dotnet application-deployment-name**
+```
+kubectl patch deployment <application-deployment-name> -p '{"spec": {"template":{"metadata":{"annotations":{"instrument.apm.alluvio/inject-dotnet":"true"}}}} }'
+```
+# Using non-default configurations
+If you are using a configuration that is different from the configName specified in the APM Agent,  You will need to annotate you deployment.
+```
+kubectl patch deployment <application-deployment-name> -p '{"spec": {"template":{"metadata":{"annotations":{"instrument.apm.alluvio/configName":"myConfig"}}}} }'
+```
+
+# Deploying sample applications:
+**Deploy tomcat**
+```
+kubectl apply -f tomcat.yaml`
+```
+**Deploy ims-tier1**
+```
+kubectl apply -f  ims-tier-autoint.yaml
+```
+**Deploy freshbrew (dotnet)**
+```
+kubectl apply -f  freshbrew-autoint.yaml
+
+```

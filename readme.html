@@ -1,0 +1,56 @@
+<h1 id="getting-started">Getting started</h1>
+<p>Welcome to the Alluvio Operator installation guide. This guide will quickly show you how to install the Alluvio Operator and instrument Java and .Net applications running in Kubernetes.</p>
+<h1 id="attach-to-your-cluster">Attach to your cluster</h1>
+<p>Ensure that kubectl points to your Kubernetes cluster where the Alluvio Operator and Alluvio APM Agent will run.</p>
+<p><strong>Attach to your Azure cluster</strong></p>
+<pre><code>az aks get-credentials --resource-group &lt;your-resource-group&gt; --name &lt;your-aks-cluster-name&gt;</code></pre>
+<p><strong>Attach to your AWS cluster</strong></p>
+<pre><code>aws eks --region &lt;region-name&gt; update-kubeconfig --name &lt;cluster-name&gt;</code></pre>
+<h1 id="install-a-certificate-manager">Install a Certificate Manager</h1>
+<p>The Alluvio Operator requires that a certificate manager is installed in your cluster and that your cluster uses Kubernetes version 1.22 or greater.</p>
+<p><strong>Check if a certificate manager is installed on your cluster</strong></p>
+<pre><code>kubectl get pods --namespace cert-manager -l app=cert-manager</code></pre>
+<p><strong>Install a certificate manager in your cluster</strong></p>
+<pre><code>kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.12.0/cert-manager.yaml</code></pre>
+<h1 id="install-the-alluvio-operator">Install the Alluvio Operator</h1>
+<p><strong>from github</strong></p>
+<pre><code>kubectl apply -f https://raw.githubusercontent.com/rvbd-operator/beta/1.0.0/alluvio-operator.yaml</code></pre>
+<p><strong>from zeus</strong></p>
+<pre><code>kubectl apply -f /zeus-shared/user/rmurray/k8sop/alluvio-operator.yaml</code></pre>
+<h1 id="configure-the-alluvio-operator">Configure the Alluvio Operator</h1>
+<p>The Customer ID and Analysis Server Host will need to be configured for the APM Agent.</p>
+<p><strong>from github</strong></p>
+<pre><code>kubectl create -f https://raw.githubusercontent.com/rvbd-operator/beta/1.0.0/alluvio_configuration.yaml --namespace=alluvio-operator --edit</code></pre>
+<p><strong>from zeus</strong></p>
+<pre><code>kubectl create -f /zeus-shared/user/rmurray/k8sop/alluvio_configuration.yaml --namespace=alluvio-operator --edit</code></pre>
+<p>Under the ‘spec’ section of the file: - update the customerId to your Customer ID - update the analysisServerHost to your Analysis Server Host identifier - update the configName to specify the default process configuration name used by your instrumented applications</p>
+<pre><code>spec:
+  customerId: &quot;MyCustId&quot;
+  analysisServerHost: &quot;MyHostId&quot;
+  configName: &quot;default config&quot;</code></pre>
+<p><strong>Verify that the Alluvio APM Agent is running</strong></p>
+<pre><code>kubectl get pods -n alluvio-operator</code></pre>
+<p>An Alluvio APM Agent pod will be running for each node:</p>
+<pre><code>NAME                                                  READY   STATUS    RESTARTS   AGE
+alluvio-apm-agent-2hpcs                               1/1     Running   0          6m36s
+alluvio-apm-agent-54v54                               1/1     Running   0          6m36s
+alluvio-operator-controller-manager-d44c57448-8jdth   2/2     Running   0          19m</code></pre>
+<h1 id="enable-auto-instrumentation-for-java-and-.net-apps">Enable auto-instrumentation for Java and .NET apps</h1>
+<p>Auto-instrumentation will take effect the next time the application is deployed.</p>
+<p><strong>Update Alpine (linux-musl64) application-deployment-name</strong></p>
+<pre><code>kubectl patch deployment &lt;application-deployment-name&gt; -p &#39;{&quot;spec&quot;: {&quot;template&quot;:{&quot;metadata&quot;:{&quot;annotations&quot;:{&quot;instrument.apm.alluvio/inject-runtime&quot;:&quot;linux-musl-x64&quot;}}}} }&#39;</code></pre>
+<p><strong>Update java application-deployment-name</strong></p>
+<pre><code>kubectl patch deployment &lt;application-deployment-name&gt; -p &#39;{&quot;spec&quot;: {&quot;template&quot;:{&quot;metadata&quot;:{&quot;annotations&quot;:{&quot;instrument.apm.alluvio/inject-java&quot;:&quot;true&quot;}}}} }&#39;</code></pre>
+<p><strong>Update dotnet application-deployment-name</strong></p>
+<pre><code>kubectl patch deployment &lt;application-deployment-name&gt; -p &#39;{&quot;spec&quot;: {&quot;template&quot;:{&quot;metadata&quot;:{&quot;annotations&quot;:{&quot;instrument.apm.alluvio/inject-dotnet&quot;:&quot;true&quot;}}}} }&#39;</code></pre>
+<h1 id="using-non-default-configurations">Using non-default configurations</h1>
+<p>If you are using a configuration that is different from the configName specified in the APM Agent, You will need to annotate you deployment.</p>
+<pre><code>kubectl patch deployment &lt;application-deployment-name&gt; -p &#39;{&quot;spec&quot;: {&quot;template&quot;:{&quot;metadata&quot;:{&quot;annotations&quot;:{&quot;instrument.apm.alluvio/configName&quot;:&quot;myConfig&quot;}}}} }&#39;</code></pre>
+<h1 id="deploying-sample-applications">Deploying sample applications:</h1>
+<p><strong>Deploy tomcat</strong></p>
+<pre><code>kubectl apply -f tomcat.yaml`</code></pre>
+<p><strong>Deploy ims-tier1</strong></p>
+<pre><code>kubectl apply -f  ims-tier-autoint.yaml</code></pre>
+<p><strong>Deploy freshbrew (dotnet)</strong></p>
+<pre><code>kubectl apply -f  freshbrew-autoint.yaml
+</code></pre>

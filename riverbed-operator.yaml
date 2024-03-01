@@ -3,13 +3,13 @@ kind: Namespace
 metadata:
   labels:
     app.kubernetes.io/component: manager
-    app.kubernetes.io/created-by: alluvio-operator
+    app.kubernetes.io/created-by: riverbed-operator
     app.kubernetes.io/instance: system
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: namespace
-    app.kubernetes.io/part-of: alluvio-operator
+    app.kubernetes.io/part-of: riverbed-operator
     control-plane: controller-manager
-  name: alluvio-operator
+  name: riverbed-operator
 ---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
@@ -17,20 +17,20 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.11.2
   creationTimestamp: null
-  name: alluviooperators.operator.riverbed
+  name: riverbedoperators.operator.riverbed
 spec:
   group: operator.riverbed
   names:
-    kind: AlluvioOperator
-    listKind: AlluvioOperatorList
-    plural: alluviooperators
-    singular: alluviooperator
+    kind: RiverbedOperator
+    listKind: RiverbedOperatorList
+    plural: riverbedoperators
+    singular: riverbedoperator
   scope: Namespaced
   versions:
   - name: betav1
     schema:
       openAPIV3Schema:
-        description: AlluvioOperator is the Schema for the alluviooperators API
+        description: RiverbedOperator is the Schema for the Riverbedoperators API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
@@ -41,7 +41,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: AlluvioOperatorSpec defines the desired state of AlluvioOperator
+            description: RiverbedOperatorSpec defines the desired state of RiverbedOperator
             properties:
               analysisServerHost:
                 description: The system name, fully-qualified domain name (FQDN), or IP address for the analysis server in your environment.
@@ -212,7 +212,7 @@ spec:
             - analysisServerHost
             type: object
           status:
-            description: AlluvioOperatorStatus defines the observed state of AlluvioOperator
+            description: RiverbedOperatorStatus defines the observed state of RiverbedOperator
             properties:
               conditions:
                 description: 'INSERT ADDITIONAL STATUS FIELD - define observed state of cluster Important: Run "make" to regenerate code after modifying this file'
@@ -231,26 +231,26 @@ kind: ServiceAccount
 metadata:
   labels:
     app.kubernetes.io/component: rbac
-    app.kubernetes.io/created-by: alluvio-operator
+    app.kubernetes.io/created-by: riverbed-operator
     app.kubernetes.io/instance: controller-manager
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: serviceaccount
-    app.kubernetes.io/part-of: alluvio-operator
-  name: alluvio-operator-controller-manager
-  namespace: alluvio-operator
+    app.kubernetes.io/part-of: riverbed-operator
+  name: riverbed-operator-controller-manager
+  namespace: riverbed-operator
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   labels:
     app.kubernetes.io/component: rbac
-    app.kubernetes.io/created-by: alluvio-operator
+    app.kubernetes.io/created-by: riverbed-operator
     app.kubernetes.io/instance: leader-election-role
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: role
-    app.kubernetes.io/part-of: alluvio-operator
-  name: alluvio-operator-leader-election-role
-  namespace: alluvio-operator
+    app.kubernetes.io/part-of: riverbed-operator
+  name: riverbed-operator-leader-election-role
+  namespace: riverbed-operator
 rules:
 - apiGroups:
   - ""
@@ -288,7 +288,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   creationTimestamp: null
-  name: alluvio-operator-manager-role
+  name: riverbed-operator-manager-role
 rules:
 - apiGroups:
   - ""
@@ -373,7 +373,7 @@ rules:
 - apiGroups:
   - operator.riverbed
   resources:
-  - alluviooperators
+  - riverbedoperators
   verbs:
   - create
   - delete
@@ -385,13 +385,13 @@ rules:
 - apiGroups:
   - operator.riverbed
   resources:
-  - alluviooperators/finalizers
+  - riverbedoperators/finalizers
   verbs:
   - update
 - apiGroups:
   - operator.riverbed
   resources:
-  - alluviooperators/status
+  - riverbedoperators/status
   verbs:
   - get
   - patch
@@ -426,12 +426,12 @@ kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/component: kube-rbac-proxy
-    app.kubernetes.io/created-by: alluvio-operator
+    app.kubernetes.io/created-by: riverbed-operator
     app.kubernetes.io/instance: metrics-reader
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: clusterrole
-    app.kubernetes.io/part-of: alluvio-operator
-  name: alluvio-operator-metrics-reader
+    app.kubernetes.io/part-of: riverbed-operator
+  name: riverbed-operator-metrics-reader
 rules:
 - nonResourceURLs:
   - /metrics
@@ -443,12 +443,12 @@ kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/component: kube-rbac-proxy
-    app.kubernetes.io/created-by: alluvio-operator
+    app.kubernetes.io/created-by: riverbed-operator
     app.kubernetes.io/instance: proxy-role
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: clusterrole
-    app.kubernetes.io/part-of: alluvio-operator
-  name: alluvio-operator-proxy-role
+    app.kubernetes.io/part-of: riverbed-operator
+  name: riverbed-operator-proxy-role
 rules:
 - apiGroups:
   - authentication.k8s.io
@@ -468,75 +468,75 @@ kind: RoleBinding
 metadata:
   labels:
     app.kubernetes.io/component: rbac
-    app.kubernetes.io/created-by: alluvio-operator
+    app.kubernetes.io/created-by: riverbed-operator
     app.kubernetes.io/instance: leader-election-rolebinding
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: rolebinding
-    app.kubernetes.io/part-of: alluvio-operator
-  name: alluvio-operator-leader-election-rolebinding
-  namespace: alluvio-operator
+    app.kubernetes.io/part-of: riverbed-operator
+  name: riverbed-operator-leader-election-rolebinding
+  namespace: riverbed-operator
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: alluvio-operator-leader-election-role
+  name: riverbed-operator-leader-election-role
 subjects:
 - kind: ServiceAccount
-  name: alluvio-operator-controller-manager
-  namespace: alluvio-operator
+  name: riverbed-operator-controller-manager
+  namespace: riverbed-operator
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
     app.kubernetes.io/component: rbac
-    app.kubernetes.io/created-by: alluvio-operator
+    app.kubernetes.io/created-by: riverbed-operator
     app.kubernetes.io/instance: manager-rolebinding
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: clusterrolebinding
-    app.kubernetes.io/part-of: alluvio-operator
-  name: alluvio-operator-manager-rolebinding
+    app.kubernetes.io/part-of: riverbed-operator
+  name: riverbed-operator-manager-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: alluvio-operator-manager-role
+  name: riverbed-operator-manager-role
 subjects:
 - kind: ServiceAccount
-  name: alluvio-operator-controller-manager
-  namespace: alluvio-operator
+  name: riverbed-operator-controller-manager
+  namespace: riverbed-operator
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
     app.kubernetes.io/component: kube-rbac-proxy
-    app.kubernetes.io/created-by: alluvio-operator
+    app.kubernetes.io/created-by: riverbed-operator
     app.kubernetes.io/instance: proxy-rolebinding
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: clusterrolebinding
-    app.kubernetes.io/part-of: alluvio-operator
-  name: alluvio-operator-proxy-rolebinding
+    app.kubernetes.io/part-of: riverbed-operator
+  name: riverbed-operator-proxy-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: alluvio-operator-proxy-role
+  name: riverbed-operator-proxy-role
 subjects:
 - kind: ServiceAccount
-  name: alluvio-operator-controller-manager
-  namespace: alluvio-operator
+  name: riverbed-operator-controller-manager
+  namespace: riverbed-operator
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
     app.kubernetes.io/component: kube-rbac-proxy
-    app.kubernetes.io/created-by: alluvio-operator
+    app.kubernetes.io/created-by: riverbed-operator
     app.kubernetes.io/instance: controller-manager-metrics-service
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: service
-    app.kubernetes.io/part-of: alluvio-operator
+    app.kubernetes.io/part-of: riverbed-operator
     control-plane: controller-manager
-  name: alluvio-operator-controller-manager-metrics-service
-  namespace: alluvio-operator
+  name: riverbed-operator-controller-manager-metrics-service
+  namespace: riverbed-operator
 spec:
   ports:
   - name: https
@@ -551,13 +551,13 @@ kind: Service
 metadata:
   labels:
     app.kubernetes.io/component: webhook
-    app.kubernetes.io/created-by: alluvio-operator
+    app.kubernetes.io/created-by: riverbed-operator
     app.kubernetes.io/instance: webhook-service
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: service
-    app.kubernetes.io/part-of: alluvio-operator
-  name: alluvio-operator-webhook-service
-  namespace: alluvio-operator
+    app.kubernetes.io/part-of: riverbed-operator
+  name: riverbed-operator-webhook-service
+  namespace: riverbed-operator
 spec:
   ports:
   - port: 443
@@ -571,14 +571,14 @@ kind: Deployment
 metadata:
   labels:
     app.kubernetes.io/component: manager
-    app.kubernetes.io/created-by: alluvio-operator
+    app.kubernetes.io/created-by: riverbed-operator
     app.kubernetes.io/instance: controller-manager
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: deployment
-    app.kubernetes.io/part-of: alluvio-operator
+    app.kubernetes.io/part-of: riverbed-operator
     control-plane: controller-manager
-  name: alluvio-operator-controller-manager
-  namespace: alluvio-operator
+  name: riverbed-operator-controller-manager
+  namespace: riverbed-operator
 spec:
   replicas: 1
   selector:
@@ -637,7 +637,7 @@ spec:
         - --leader-elect
         command:
         - /manager
-        image: riverbed/alluvio-operator:1.0.0-10
+        image: zeus.run/rmurray/alluvio-operator:1.0.0
         livenessProbe:
           httpGet:
             path: /healthz
@@ -673,7 +673,7 @@ spec:
           readOnly: true
       securityContext:
         runAsNonRoot: true
-      serviceAccountName: alluvio-operator-controller-manager
+      serviceAccountName: riverbed-operator-controller-manager
       terminationGracePeriodSeconds: 10
       volumes:
       - name: cert
@@ -686,20 +686,20 @@ kind: Certificate
 metadata:
   labels:
     app.kubernetes.io/component: certificate
-    app.kubernetes.io/created-by: alluvio-operator
+    app.kubernetes.io/created-by: riverbed-operator
     app.kubernetes.io/instance: serving-cert
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: certificate
-    app.kubernetes.io/part-of: alluvio-operator
-  name: alluvio-operator-serving-cert
-  namespace: alluvio-operator
+    app.kubernetes.io/part-of: riverbed-operator
+  name: riverbed-operator-serving-cert
+  namespace: riverbed-operator
 spec:
   dnsNames:
-  - alluvio-operator-webhook-service.alluvio-operator.svc
-  - alluvio-operator-webhook-service.alluvio-operator.svc.cluster.local
+  - riverbed-operator-webhook-service.riverbed-operator.svc
+  - riverbed-operator-webhook-service.riverbed-operator.svc.cluster.local
   issuerRef:
     kind: Issuer
-    name: alluvio-operator-selfsigned-issuer
+    name: riverbed-operator-selfsigned-issuer
   secretName: webhook-server-cert
 ---
 apiVersion: cert-manager.io/v1
@@ -707,13 +707,13 @@ kind: Issuer
 metadata:
   labels:
     app.kubernetes.io/component: certificate
-    app.kubernetes.io/created-by: alluvio-operator
+    app.kubernetes.io/created-by: riverbed-operator
     app.kubernetes.io/instance: selfsigned-issuer
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: issuer
-    app.kubernetes.io/part-of: alluvio-operator
-  name: alluvio-operator-selfsigned-issuer
-  namespace: alluvio-operator
+    app.kubernetes.io/part-of: riverbed-operator
+  name: riverbed-operator-selfsigned-issuer
+  namespace: riverbed-operator
 spec:
   selfSigned: {}
 ---
@@ -721,22 +721,22 @@ apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
   annotations:
-    cert-manager.io/inject-ca-from: alluvio-operator/alluvio-operator-serving-cert
+    cert-manager.io/inject-ca-from: riverbed-operator/riverbed-operator-serving-cert
   labels:
     app.kubernetes.io/component: webhook
-    app.kubernetes.io/created-by: alluvio-operator
+    app.kubernetes.io/created-by: riverbed-operator
     app.kubernetes.io/instance: mutating-webhook-configuration
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: mutatingwebhookconfiguration
-    app.kubernetes.io/part-of: alluvio-operator
-  name: alluvio-operator-mutating-webhook-configuration
+    app.kubernetes.io/part-of: riverbed-operator
+  name: riverbed-operator-mutating-webhook-configuration
 webhooks:
 - admissionReviewVersions:
   - v1
   clientConfig:
     service:
-      name: alluvio-operator-webhook-service
-      namespace: alluvio-operator
+      name: riverbed-operator-webhook-service
+      namespace: riverbed-operator
       path: /mutate--v1-pod
   failurePolicy: Ignore
   name: mpod.kb.io
