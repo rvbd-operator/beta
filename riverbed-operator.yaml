@@ -637,7 +637,14 @@ spec:
         - --leader-elect
         command:
         - /manager
-        image: zeus.run/rmurray/alluvio-operator:1.0.0
+        env:
+        - name: RVBD_JAVA_INSTRUMENTATION_IMAGE
+          value: zeus.run/agent/riverbed-java:12.25.0.512
+        - name: RVBD_DOTNET_INSTRUMENTATION_IMAGE
+          value: zeus.run/agent/riverbed-dotnet:12.25.0.512
+        - name: RVBD_APM_AGENT_IMAGE
+          value: zeus.run/agent/sidecar:12.25.0.512
+        image: zeus.run/rmurray/riverbed-operator:1.0.0
         livenessProbe:
           httpGet:
             path: /healthz

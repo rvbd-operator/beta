@@ -13,7 +13,7 @@ spec:
   template:
     metadata:
       annotations:
-        instrument.apm.alluvio/inject-dotnet: "true"
+        instrument.apm.riverbed/inject-dotnet: "true"
       labels:
         app: freshbrew
     spec:
