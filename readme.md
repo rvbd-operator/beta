@@ -30,7 +30,6 @@ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/
 
 # Install the Alluvio Operator
 
-## Installation using riverbed public registry.
 
 ```
 kubectl apply -f https://raw.githubusercontent.com/rvbd-operator/beta/1.0.0/riverbed-operator.yaml

@@ -639,12 +639,12 @@ spec:
         - /manager
         env:
         - name: RVBD_JAVA_INSTRUMENTATION_IMAGE
-          value: zeus.run/agent/riverbed-java:12.25.0.512
+          value: riverbed/riverbed-java-instrumentation:12.25.0.512
         - name: RVBD_DOTNET_INSTRUMENTATION_IMAGE
-          value: zeus.run/agent/riverbed-dotnet:12.25.0.512
+          value: riverbed/riverbed-dotnet-instrumentation:12.25.0.512
         - name: RVBD_APM_AGENT_IMAGE
-          value: zeus.run/agent/sidecar:12.25.0.512
-        image: zeus.run/rmurray/riverbed-operator:1.0.0
+          value: riverbed/riverbed-apm-agent:12.25.0.512
+        image: riverbed/riverbed-operator:1.0.0-15
         livenessProbe:
           httpGet:
             path: /healthz
