@@ -40,7 +40,7 @@ kubectl apply -f https://raw.githubusercontent.com/rvbd-operator/beta/1.0.0/rive
 
 ***Create an imagePullSecret***
 
-Create a secret named regcred to access Docker image is from a Zeus private repository, a secret needs to be created for pulling the image . To create the secret, enter the following command, where <your-registry-server> is zeus-run, <your-name> is your Docker username, <your-pword> is your Docker password, <your-email> is your Docker email.   and <your-namespace> is the namespace where you intend to install the agent (ie riverbed)  You can obtain docker credentials from https://zeus.run/#account:
+Create a secret named **regcred** to access Docker image is from a Zeus private repository, a secret needs to be created for pulling the image . To create the secret, enter the following command, where <your-registry-server> is zeus-run, <your-name> is your Docker username, <your-pword> is your Docker password, <your-email> is your Docker email.   and <your-namespace> is the namespace where you intend to install the agent (ie riverbed)  You can obtain docker credentials from https://zeus.run/#account:
 
 ```
 kubectl create secret docker-registry regcred -n riverbed-operator --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
@@ -91,7 +91,7 @@ Change the image identifiers as appropriate for example:
 # Configure the Riverbed Operator
 
 
-The Customer ID and Analysis Server Host will need to be configured for the APM Agent.
+The Customer ID and Analysis Server Host will need to be configured for the APM Agent. Additional configuration may be required (outlined below)
 
 
 ```
@@ -118,17 +118,29 @@ riverbed-apm-agent-54v54                               1/1     Running   0      
 riverbed-operator-controller-manager-d44c57448-8jdth   2/2     Running   0          19m
 ```
 
-# Enable auto-instrumentation for Java and .NET apps
-Auto-instrumentation will take effect the next time the application is deployed.  If the application is deployed, it will automatically restart.
+# Configuring auto-instrumentation for Java and .NET apps
+Auto-instrumentation will take effect the next time the application is deployed.  You can either annotate the application deployment, or the 
+namespace that contains the application.  Annotations applied to the application deployment override annotations to the namepace.  
+If the application is annotated and the application is running, it will automatically restart.  If the annotation is applied to the namespace, 
+you will need restart the application for the instrumentation configuration to take effect.
 
-**Update Alpine (linux-musl64) application-deployment-name**
+**Configuring Alpine (linux-musl64) applications**
+If auto-instrumenting alpine applications, you must annotate the application deployment with the `linux-musl-x64` runtime information:
 ```
 kubectl patch deployment <application-deployment-name> -p '{"spec": {"template":{"metadata":{"annotations":{"instrument.apm.riverbed/inject-runtime":"linux-musl-x64"}}}} }'
 ```
 
 **Update java application-deployment-name**
+To instrument java applications,  you need to annotate either the namespace or the application deployment
+
+To annotate the application deployment:
 ```
 kubectl patch deployment <application-deployment-name> -p '{"spec": {"template":{"metadata":{"annotations":{"instrument.apm.riverbed/inject-java":"true"}}}} }'
+```
+To annotate all applications in a namespace:
+
+```
+kubectl annotate namespace <application-namespace> instrument.apm.riverbed/inject-java=true
 ```
 
 **Update dotnet application-deployment-name**
