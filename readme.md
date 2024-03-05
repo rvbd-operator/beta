@@ -35,24 +35,44 @@ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/
 kubectl apply -f https://raw.githubusercontent.com/rvbd-operator/beta/1.0.0/riverbed-operator.yaml
 ```
 
-## Installation using Zeus private registry.
+## Post install steps if using Zeus private registry.
 
+
+***Create an imagePullSecret***
+
+Create a secret named regcred to access Docker image is from a Zeus private repository, a secret needs to be created for pulling the image . To create the secret, enter the following command, where <your-registry-server> is zeus-run, <your-name> is your Docker username, <your-pword> is your Docker password, <your-email> is your Docker email.   and <your-namespace> is the namespace where you intend to install the agent (ie riverbed)  You can obtain docker credentials from https://zeus.run/#account:
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/rvbd-operator/beta/1.0.0/riverbed-operator.yaml --edit
+kubectl create secret docker-registry regcred -n riverbed-operator --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+```
+for example:
+```
+kubectl create secret docker-registry regcred -n riverbed-operator --docker-server=zeus.run --docker-username=rmurray --docker-password=xxxxxxxxx --docker-email=rmurray@riverbed.com
+
 ```
 
-***Locate and edit the image identifier***
+***Add image pull secret to service account***
+```
+kubectl patch serviceaccount riverbed-operator-controller-manager -n riverbed-operator -p '{"imagePullSecrets": [{"name": "regcred"}]}'
+```
+
+***Locate and edit the image identifier in riverbed-operator-controller-manager deployment***
+
+```
+kubectl edit deployment -n riverbed-operator riverbed-operator-controller-manager
+```
+
 For example
 ```
         env:
         - name: RVBD_JAVA_INSTRUMENTATION_IMAGE
-          value: riverbed/riverbed-java-instrumentation:12.25.0.512
+          value: zeus.run/agent/riverbed-java:12.25.0.512
         - name: RVBD_DOTNET_INSTRUMENTATION_IMAGE
-          value: riverbed/riverbed-dotnet-instrumentation:12.25.0.512
+          value: zeus.run/agent/riverbed-dotnet:12.25.0.512
         - name: RVBD_APM_AGENT_IMAGE
-          value: riverbed/riverbed-apm-agent:12.25.0.512
-        image: zeus.run/rmurray/riverbed-operator:1.0.0
+          value: zeus.run/agent/sidecar:12.25.0.512
+        image: riverbed/riverbed-operator:1.0.0-15
+
 
 ```
 Change the image identifiers as appropriate for example:
@@ -64,28 +84,8 @@ Change the image identifiers as appropriate for example:
           value: zeus.run/agent/riverbed-dotnet:12.25.0.512
         - name: RVBD_APM_AGENT_IMAGE
           value: zeus.run/agent/sidecar:12.25.0.512
-        image: zeus.run/rmurray/riverbed-operator:1.0.0
+        image: zeus.run/riverbed/riverbed-operator:1.0.0-15
 
-```
-Change the image identifiers
-
-
-***Create an imagePullSecret***
-
-Create a secret to access Docker image is from a Zeus private repository, a secret needs to be created for pulling the image . To create the secret, enter the following command, where <your-registry-server> is zeus-run, <your-name> is your Docker username, <your-pword> is your Docker password, <your-email> is your Docker email.   and <your-namespace> is the namespace where you intend to install the agent (ie riverbed)  You can obtain docker credentials from https://zeus.run/#account:
-
-```
-kubectl create secret docker-registry <your-secret-name> -n riverbed-operator --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
-```
-for example:
-```
-kubectl create secret docker-registry regcred -n riverbed-operator --docker-server=zeus.run --docker-username=rmurray --docker-password=xxxxxxxxx --docker-email=rmurray@riverbed.com
-
-```
-
-***Add image pull secret to service account***
-```
-kubectl patch serviceaccount riverbed-operator-controller-manager -n riverbed-operator -p '{"imagePullSecrets": [{"name": "<secret-name>"}]}'
 ```
 
 # Configure the Riverbed Operator
@@ -103,20 +103,8 @@ Under the ‘spec’ section of the file:
 - update the analysisServerHost to your Analysis Server Host identifier
 - update the configName to specify the default process configuration name used by your instrumented applications
 
-```
-spec:
-  customerId: "MyCustId"
-  analysisServerHost: "MyHostId"
-  configName: "default config"
-```
-
-***Additional configuration when using a private image registry***
-Add image pull secret to riverbed-apm-agent service account
-```
-kubectl patch serviceaccount riverbed-apm-agent -n riverbed-operator -p '{"imagePullSecrets": [{"name": "<secret-name>"}]}'``
-```
-
 **Verify that the Riverbed APM Agent is running**
+
 ```
 kubectl get pods -n riverbed-operator
 ```
@@ -153,17 +141,35 @@ If you are using a configuration that is different from the configName specified
 kubectl patch deployment <application-deployment-name> -p '{"spec": {"template":{"metadata":{"annotations":{"instrument.apm.riverbed/configName":"myConfig"}}}} }'
 ```
 
-# Deploying sample applications TBD ignore for now:
+# Deploying sample applications :
+
+***Create an imagePullSecret***
+
+Create a secret named regcred to access Docker image is from a Zeus private repository, a secret needs to be created for pulling the image . To create the secret, enter the following command, where <your-registry-server> is zeus-run, <your-name> is your Docker username, <your-pword> is your Docker password, <your-email> is your Docker email.   and <your-namespace> is the namespace where you intend to install the agent (ie riverbed)  You can obtain docker credentials from https://zeus.run/#account:
+
+```
+kubectl create secret docker-registry regcred -n riverbed-operator --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+```
+for example:
+```
+kubectl create secret docker-registry regcred -n riverbed-operator --docker-server=zeus.run --docker-username=rmurray --docker-password=xxxxxxxxx --docker-email=rmurray@riverbed.com
+
+```
+
+***Additional configuration when using a private image registry***
+
+Add image pull secret to riverbed-apm-agent service account
+```
+kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "regcred"}]}'``
+```
+
 **Deploy tomcat**
 ```
-kubectl apply -f tomcat.yaml`
+https://raw.githubusercontent.com/rvbd-operator/beta/1.0.0/tomcat.yaml
 ```
-**Deploy ims-tier1**
-```
-kubectl apply -f  ims-tier-autoint.yaml
-```
+
 **Deploy freshbrew (dotnet)**
 ```
-kubectl apply -f  freshbrew-autoint.yaml
+https://raw.githubusercontent.com/rvbd-operator/beta/1.0.0/freshbrew-autoinst.yaml
 
 ```

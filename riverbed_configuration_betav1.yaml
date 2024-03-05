@@ -10,8 +10,8 @@ metadata:
   name: riverbed-apm-agent
   namespace: riverbed-operator
 spec:
-  customerId: "61d710a0-811f-46d1-b654-0aeabb8e8b0a"
-  analysisServerHost: "agents.apm.next.aternity.com"
+  customerId: "<YOUR CUSTOMER ID>"
+  analysisServerHost: "agents.apm.<YOUR ENV>.aternity.com"
   apmAgent:
     logicalServer: "russ-minikube"
     configName: "default config"
