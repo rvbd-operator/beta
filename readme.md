@@ -126,19 +126,19 @@ If the application is annotated and the application is running, it will automati
 you will need restart the application for the instrumentation configuration to take effect.
 
 
-| Annotation                             | Values                        | Defaults            | Description                |
-|----------------------------------------|-------------------------------|---------------------|----------------------------|
-| instrument.apm.riverbed/inject-runtime | "linux-musl64" or "linux-x64" | "linux-x64"         | Runtime environment        |
-| instrument.apm.riverbed/inject-java    | "true" or "false"             | "false"             | For Java instrumentation   |
-| instrument.apm.riverbed/inject-dotnet  | "true" or "false"             | "false"             | For Dotnet instrumentation |
-| instrument.apm.riverbed/configName     | "configuration Name           | operator configName | Process Configuration Name |
+| Annotation                      | Values                        | Defaults            | Description                |
+|---------------------------------|-------------------------------|---------------------|----------------------------|
+| instrument.apm.riverbed/runtime | "linux-musl64" or "linux-x64" | "linux-x64"         | Runtime environment        |
+| instrument.apm.riverbed/inject-java | "true" or "false"             | "false"             | For Java instrumentation   |
+| instrument.apm.riverbed/inject-dotnet | "true" or "false"             | "false"             | For Dotnet instrumentation |
+| instrument.apm.riverbed/configName | "configuration Name           | operator configName | Process Configuration Name |
 
 
 # Examples instrumentation patching for Java and .NET apps
 **Configuring Alpine (linux-musl64) applications**
 If auto-instrumenting alpine applications(dotnet or java), you must annotate the application deployment with the `linux-musl-x64` runtime information:
 ```
-kubectl patch deployment <application-deployment-name> -p '{"spec": {"template":{"metadata":{"annotations":{"instrument.apm.riverbed/inject-runtime":"linux-musl-x64"}}}} }'
+kubectl patch deployment <application-deployment-name> -p '{"spec": {"template":{"metadata":{"annotations":{"instrument.apm.riverbed/runtime":"linux-musl-x64"}}}} }'
 ```
 
 **Update java application-deployment-name**
