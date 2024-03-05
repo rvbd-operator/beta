@@ -118,21 +118,34 @@ riverbed-apm-agent-54v54                               1/1     Running   0      
 riverbed-operator-controller-manager-d44c57448-8jdth   2/2     Running   0          19m
 ```
 
-# Configuring auto-instrumentation for Java and .NET apps
-Auto-instrumentation will take effect the next time the application is deployed.  You can either annotate the application deployment, or the 
-namespace that contains the application.  Annotations applied to the application deployment override annotations to the namepace.  
+# Configuring instrumentation for Java and .NET apps
+Instrumentation is configured by adding annotations to the application pod or namespace. add an annotation to a pod to enable injection. The annotation can be added to a namespace, so that all pods within that namespace will get instrumentation, or by adding the annotation to individual PodSpec objects, available as part of Deployment, Statefulset, and other resources.
+
+Annotations applied to the application deployment override annotations to the namepace.  
 If the application is annotated and the application is running, it will automatically restart.  If the annotation is applied to the namespace, 
 you will need restart the application for the instrumentation configuration to take effect.
 
+
+| Annotation                             | Values                        | Defaults            | Description                |
+|----------------------------------------|-------------------------------|---------------------|----------------------------|
+| instrument.apm.riverbed/inject-runtime | "linux-musl64" or "linux-x64" | "linux-x64"         | Runtime environment        |
+| instrument.apm.riverbed/inject-java    | "true" or "false"             | "false"             | For Java instrumentation   |
+| instrument.apm.riverbed/inject-dotnet  | "true" or "false"             | "false"             | For Dotnet instrumentation |
+| instrument.apm.riverbed/configName     | "configuration Name           | operator configName | Process Configuration Name |
+
+
+# Examples instrumentation patching for Java and .NET apps
 **Configuring Alpine (linux-musl64) applications**
-If auto-instrumenting alpine applications, you must annotate the application deployment with the `linux-musl-x64` runtime information:
+If auto-instrumenting alpine applications(dotnet or java), you must annotate the application deployment with the `linux-musl-x64` runtime information:
 ```
 kubectl patch deployment <application-deployment-name> -p '{"spec": {"template":{"metadata":{"annotations":{"instrument.apm.riverbed/inject-runtime":"linux-musl-x64"}}}} }'
 ```
 
 **Update java application-deployment-name**
-To instrument java applications,  you need to annotate either the namespace or the application deployment
-
+To auto-instrument java applications,  you need to add the following annotation to either namespace or the application deployment
+``
+instrument.apm.riverbed/inject-java":"true"
+``
 To annotate the application deployment:
 ```
 kubectl patch deployment <application-deployment-name> -p '{"spec": {"template":{"metadata":{"annotations":{"instrument.apm.riverbed/inject-java":"true"}}}} }'
@@ -177,11 +190,11 @@ kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "regcred
 
 **Deploy tomcat**
 ```
-https://raw.githubusercontent.com/rvbd-operator/beta/1.0.0/tomcat.yaml
+kubectl apply -f https://raw.githubusercontent.com/rvbd-operator/beta/1.0.0/tomcat.yaml
 ```
 
 **Deploy freshbrew (dotnet)**
 ```
-https://raw.githubusercontent.com/rvbd-operator/beta/1.0.0/freshbrew-autoinst.yaml
+kubectl apply -f https://raw.githubusercontent.com/rvbd-operator/beta/1.0.0/freshbrew-autoinst.yaml
 
 ```
