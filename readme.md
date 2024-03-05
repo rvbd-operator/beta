@@ -17,7 +17,7 @@ aws eks --region <region-name> update-kubeconfig --name <cluster-name>
 ```
 
 # Install a Certificate Manager
-The Alluvio Operator requires that a certificate manager is installed in your cluster and that your cluster uses Kubernetes version 1.22 or greater.
+The Riverbed Operator requires that a certificate manager is installed in your cluster and that your cluster uses Kubernetes version 1.22 or greater.
 
 **Check if a certificate manager is installed on your cluster**
 ```
@@ -28,7 +28,7 @@ kubectl get pods --namespace cert-manager -l app=cert-manager
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.12.0/cert-manager.yaml
 ```
 
-# Install the Alluvio Operator
+# Install the Riverbed Operator
 
 
 ```
