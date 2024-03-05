@@ -62,7 +62,7 @@ kubectl patch serviceaccount riverbed-operator-controller-manager -n riverbed-op
 kubectl edit deployment -n riverbed-operator riverbed-operator-controller-manager
 ```
 
-For example
+For example if this is the original image identifiers:
 ```
         env:
         - name: RVBD_JAVA_INSTRUMENTATION_IMAGE
@@ -75,7 +75,7 @@ For example
 
 
 ```
-Change the image identifiers as appropriate for example:
+Change the image identifiers as appropriate to the following:
 
 ```
         - name: RVBD_JAVA_INSTRUMENTATION_IMAGE
