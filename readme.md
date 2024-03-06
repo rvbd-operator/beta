@@ -126,20 +126,15 @@ If the application is annotated and the application is running, it will automati
 you will need restart the application for the instrumentation configuration to take effect.
 
 
-| Annotation                      | Values                        | Defaults            | Description                |
-|---------------------------------|-------------------------------|---------------------|----------------------------|
-| instrument.apm.riverbed/runtime | "linux-musl64" or "linux-x64" | "linux-x64"         | Runtime environment        |
-| instrument.apm.riverbed/inject-java | "true" or "false"             | "false"             | For Java instrumentation   |
-| instrument.apm.riverbed/inject-dotnet | "true" or "false"             | "false"             | For Dotnet instrumentation |
-| instrument.apm.riverbed/configName | "configuration Name           | operator configName | Process Configuration Name |
-
+| Annotation                      | Values                        | Defaults            | Description                                            |
+|---------------------------------|-------------------------------|---------------------|--------------------------------------------------------|
+| instrument.apm.riverbed/inject-java | "true" or "false"             | "false"             | For Java instrumentation                               |
+| instrument.apm.riverbed/inject-dotnet | "true" or "false"             | "false"             | For Dotnet instrumentation                             |
+| instrument.apm.riverbed/configName | "configuration Name           | operator configName | Process Configuration Name to instrument application.  |
+| instrument.apm.riverbed/runtime | "linux-musl64" or "linux-x64" | "linux-x64"         | Runtime environment used to instrument the application |
 
 # Examples instrumentation patching for Java and .NET apps
-**Configuring Alpine (linux-musl64) applications**
-If auto-instrumenting alpine applications(dotnet or java), you must annotate the application deployment with the `linux-musl-x64` runtime information:
-```
-kubectl patch deployment <application-deployment-name> -p '{"spec": {"template":{"metadata":{"annotations":{"instrument.apm.riverbed/runtime":"linux-musl-x64"}}}} }'
-```
+
 
 **Update java application-deployment-name**
 To auto-instrument java applications,  you need to add the following annotation to either namespace or the application deployment
@@ -161,11 +156,15 @@ kubectl annotate namespace <application-namespace> instrument.apm.riverbed/injec
 kubectl patch deployment <application-deployment-name> -p '{"spec": {"template":{"metadata":{"annotations":{"instrument.apm.riverbed/inject-dotnet":"true"}}}} }'
 ```
 # Using non-default configurations
-If you are using a configuration that is different from the configName specified in the APM Agent,  You will need to annotate you deployment.
+If you are using a configuration that is different from the configName specified in the APM Agent,  You will need to annotate your deployment with configuration name.
 ```
 kubectl patch deployment <application-deployment-name> -p '{"spec": {"template":{"metadata":{"annotations":{"instrument.apm.riverbed/configName":"myConfig"}}}} }'
 ```
-
+**Configuring Alpine (linux-musl64) applications**
+If auto-instrumenting alpine applications(dotnet or java), you must annotate the application deployment with the `linux-musl-x64` runtime information.  The runtime information will only be used if the application is already for configured for instrumentation :
+```
+kubectl patch deployment <application-deployment-name> -p '{"spec": {"template":{"metadata":{"annotations":{"instrument.apm.riverbed/runtime":"linux-musl-x64"}}}} }'
+```
 # Deploying sample applications :
 
 ***Create an imagePullSecret***
