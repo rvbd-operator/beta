@@ -1,10 +1,10 @@
  
 
 # Getting started
-Welcome to the Riverbed Operator installation guide. This guide will quickly show you how to install the Alluvio Operator and instrument Java and .Net applications running in Kubernetes.
+Welcome to the Riverbed Operator installation guide. This guide will quickly show you how to install the Riverbed Operator and instrument Java and .Net applications running in Kubernetes.
 
 # Attach to your cluster
-Ensure that kubectl points to your Kubernetes cluster where the Alluvio Operator and Alluvio APM Agent will run.
+Ensure that kubectl points to your Kubernetes cluster where the Riverbed Operator and Riverbed APM Agent will run.
 
 **Attach to your Azure cluster**
 ```
