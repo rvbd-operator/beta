@@ -1,0 +1,30 @@
+apiVersion: operator.riverbed/betav1
+kind: RiverbedOperator
+metadata:
+  labels:
+    app.kubernetes.io/name: riverbedoperator
+    app.kubernetes.io/instance: riverbed-apm-agent
+    app.kubernetes.io/part-of: riverbed-operator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: riverbed-operator
+  name: riverbed-apm-agent
+  namespace: riverbed-operator
+spec:
+  customerId: "61d710a0-811f-46d1-b654-0aeabb8e8b0a"
+  analysisServerHost: "agents.apm.next.aternity.com"
+  apmAgent:
+    logicalServer: "russ-minikube"
+    configName: "default config"
+    containerMetrics: false
+    hostMetrics: true
+    javaMetrics: true
+    # Use this security context in order to see instrumentation status from the web ui.
+    securityContext:
+      runAsUser: 0
+      runAsGroup: 0
+      privileged: true
+    resources:
+      limits:
+        cpu: 800m
+        memory: 700M
+

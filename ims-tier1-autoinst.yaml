@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ims-tier1
+  name: ims-tier1
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ims-tier1
+  template:
+    metadata:
+      annotations:
+        instrument.apm.alluvio/inject-java: "true"
+      labels:
+        app: ims-tier1
+    spec:
+      containers:
+      - image: zeus.run/ims/java-springboot:1.40
+        name: ims-tier1
+        resources:
+            limits:
+                cpu:	250m
+                memory:	1000Mi
+            requests:
+                cpu:	100m
+                memory:	256Mi
+
