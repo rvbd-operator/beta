@@ -66,12 +66,12 @@ For example if this is the original image identifiers:
 ```
         env:
         - name: RVBD_JAVA_INSTRUMENTATION_IMAGE
-          value: riverbed/riverbed-java-instrumentation:12.25.0.512
+          value: riverbed/riverbed-java-instrumentation:12.25.0.514
         - name: RVBD_DOTNET_INSTRUMENTATION_IMAGE
-          value: riverbed/riverbed-dotnet-instrumentation:12.25.0.512
+          value: riverbed/riverbed-dotnet-instrumentation:12.25.0.514
         - name: RVBD_APM_AGENT_IMAGE
-          value: riverbed/riverbed-apm-agent:12.25.0.512
-        image: riverbed/riverbed-operator:1.0.0-15
+          value: riverbed/riverbed-apm-agent:12.25.0.514
+        image: riverbed/riverbed-operator:1.0.0-16
 
 
 ```
